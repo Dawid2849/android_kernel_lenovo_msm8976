@@ -421,17 +421,17 @@ int dwc3_send_gadget_ep_cmd(struct dwc3 *dwc, unsigned ep,
 
 	dwc3_writel(dwc->regs, DWC3_DEPCMD(ep), cmd | DWC3_DEPCMD_CMDACT);
 	do {
-		reg = dwc3_readl(dwc->regs, DWC3_DGCMD);
-		if (!(reg & DWC3_DGCMD_CMDACT)) {
+		reg = dwc3_readl(dwc->regs, DWC3_DEPCMD(ep));
+		if (!(reg & DWC3_DEPCMD_CMDACT)) {
 			dev_vdbg(dwc->dev, "Command Complete --> %d\n",
-					DWC3_DGCMD_STATUS(reg));
-			if (DWC3_DGCMD_STATUS(reg))
+					DWC3_DEPCMD_STATUS(reg));
+			if (DWC3_DEPCMD_STATUS(reg))
 				return -EINVAL;
 			return 0;
 		}
 
 		/*
-		 * We can't sleep here, because it's also called from
+		 * We can't sleep here, because it is also called from
 		 * interrupt context.
 		 */
 		timeout--;
